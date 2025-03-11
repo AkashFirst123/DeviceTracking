@@ -81,3 +81,22 @@ export async function getDeviceStats(): Promise<{
   }
   return res.json();
 }
+
+/**
+ * Download a PDF report for a specific device
+ * @param deviceId The ID of the device to generate a PDF report for
+ */
+export function downloadDevicePDF(deviceId: number): void {
+  const userId = parseInt(localStorage.getItem("userId") || "1");
+  // Open the PDF download in a new tab
+  window.open(`/api/download/device/${deviceId}?userId=${userId}`, '_blank');
+}
+
+/**
+ * Download a PDF report containing all user devices
+ */
+export function downloadDeviceListPDF(): void {
+  const userId = parseInt(localStorage.getItem("userId") || "1");
+  // Open the PDF download in a new tab
+  window.open(`/api/download/devices?userId=${userId}`, '_blank');
+}

@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
@@ -10,6 +10,7 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { generateDevicePDF, generateDeviceListPDF } from "./pdf-generator";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
@@ -351,6 +352,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(200).json(alert);
     } catch (error) {
       return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // PDF Routes
+  app.get("/api/download/device/:id", async (req: Request, res: Response) => {
+    try {
+      const deviceId = parseInt(req.params.id);
+      
+      if (isNaN(deviceId)) {
+        return res.status(400).json({ message: "Valid device ID is required" });
+      }
+      
+      // Get the device data
+      const device = await storage.getDevice(deviceId);
+      
+      if (!device) {
+        return res.status(404).json({ message: "Device not found" });
+      }
+      
+      // Get the last 10 locations for the device
+      const locations = await storage.getLocationHistory(deviceId, 10);
+      
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=device-${deviceId}.pdf`);
+      
+      // Generate and stream the PDF
+      generateDevicePDF(res, device, locations);
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      return res.status(500).json({ message: "Failed to generate PDF" });
+    }
+  });
+
+  app.get("/api/download/devices", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.query.userId as string);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Valid user ID is required" });
+      }
+      
+      // Get all devices for the user
+      const devices = await storage.getDevicesByUser(userId);
+      
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=device-list.pdf');
+      
+      // Generate and stream the PDF
+      generateDeviceListPDF(res, devices);
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      return res.status(500).json({ message: "Failed to generate PDF" });
     }
   });
 
