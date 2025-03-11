@@ -5,7 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { Device } from "@shared/schema";
 import { Link } from "wouter";
-import { MoreVertical, Clock, MapPin, Smartphone, Tablet, Laptop, Watch } from "lucide-react";
+import { MoreVertical, Clock, MapPin, Smartphone, Tablet, Laptop, Watch, Download, FileText } from "lucide-react";
+import { downloadDevicePDF, downloadDeviceListPDF } from "@/lib/device-api";
 import { formatDistanceToNow } from "date-fns";
 
 interface DeviceListProps {
@@ -77,7 +78,8 @@ export const DeviceList: FC<DeviceListProps> = ({ userId, limit, showViewAll = t
     );
   };
 
-  const formatLastSeen = (date: Date) => {
+  const formatLastSeen = (date: Date | null) => {
+    if (!date) return 'Never';
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
 
@@ -119,13 +121,26 @@ export const DeviceList: FC<DeviceListProps> = ({ userId, limit, showViewAll = t
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-gray-200">
         <CardTitle className="text-gray-800">Registered Devices</CardTitle>
-        {showViewAll && (
-          <Link href="/devices">
-            <Button variant="link" className="text-primary hover:text-primary-dark text-sm font-medium p-0">
-              View All
-            </Button>
-          </Link>
-        )}
+        <div className="flex items-center space-x-2">
+          {/* PDF Download button for all devices */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-1"
+            onClick={() => downloadDeviceListPDF()}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Export PDF</span>
+          </Button>
+          
+          {showViewAll && (
+            <Link href="/devices">
+              <Button variant="link" className="text-primary hover:text-primary-dark text-sm font-medium p-0">
+                View All
+              </Button>
+            </Link>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         <div className="divide-y divide-gray-100">
@@ -150,14 +165,32 @@ export const DeviceList: FC<DeviceListProps> = ({ userId, limit, showViewAll = t
                       </div>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-800">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-gray-400 hover:text-gray-800"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        downloadDevicePDF(device.id);
+                      }}
+                      title="Download device report"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-gray-400 hover:text-gray-800"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="mt-3 flex items-center text-sm text-gray-500">
                   <Clock className="text-gray-400 h-3 w-3 mr-1" />
-                  <span>Last seen: {formatLastSeen(device.lastSeen)}</span>
+                  <span>Last seen: {device.lastSeen ? formatLastSeen(device.lastSeen) : 'Never'}</span>
                   <span className="mx-2">•</span>
                   <MapPin className="text-gray-400 h-3 w-3 mr-1" />
                   <span>Location unavailable</span>
