@@ -55,19 +55,19 @@ const Settings: FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="username">Username</Label>
-                      <Input id="username" defaultValue="alexjohnson" />
+                      <Input id="username" defaultValue="akashrawat" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" defaultValue="alex.j@example.com" />
+                      <Input id="email" type="email" defaultValue="gmail@example.com" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="fullname">Full Name</Label>
-                      <Input id="fullname" defaultValue="Alex Johnson" />
+                      <Input id="fullname" defaultValue="Akash Rawat" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" defaultValue="+1 (555) 123-4567" />
+                      <Input id="phone" type="tel" defaultValue="+917619854195" />
                     </div>
                   </div>
                   

@@ -60,7 +60,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
   onOpenChange,
 }) => {
   const { toast } = useToast();
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -78,23 +78,23 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
     try {
       // Extract termsAccepted from the values since it's not part of the device schema
       const { termsAccepted, ...deviceData } = values;
-      
+
       await apiRequest("POST", "/api/devices", deviceData);
-      
+
       // Invalidate queries to refresh device lists
       queryClient.invalidateQueries({ queryKey: ["/api/devices"] });
       queryClient.invalidateQueries({ queryKey: ["/api/devices-with-locations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/device-stats"] });
-      
+
       toast({
         title: "Device Registered",
         description: "Your device has been successfully registered.",
         variant: "default",
       });
-      
+
       // Close the modal
       onOpenChange(false);
-      
+
       // Reset the form
       form.reset();
     } catch (error) {
@@ -116,7 +116,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
             Add a new device to track its location and status.
           </DialogDescription>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -143,7 +143,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="name"
@@ -157,7 +157,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="imei"
@@ -174,7 +174,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="email"
@@ -188,7 +188,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="notes"
@@ -202,7 +202,7 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="termsAccepted"
@@ -223,8 +223,21 @@ export const DeviceRegistrationForm: FC<DeviceRegistrationFormProps> = ({
                 </FormItem>
               )}
             />
-            
-            <DialogFooter className="sm:justify-end mt-6 gap-2">
+
+            <div className="flex flex-col gap-4">
+              <a href="/auth/google" className="w-full">
+                <Button type="button" variant="outline" className="w-full">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4 mr-2" />
+                  Sign in with Google
+                </Button>
+              </a>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

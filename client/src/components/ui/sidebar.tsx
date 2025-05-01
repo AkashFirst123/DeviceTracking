@@ -145,8 +145,8 @@ export const Sidebar: FC<SidebarProps> = ({ className }) => {
             </div>
             {isOpen && (
               <div>
-                <p className="text-white text-sm font-medium">Alex Johnson</p>
-                <p className="text-gray-400 text-xs">alex.j@example.com</p>
+                <p className="text-white text-sm font-medium">Akash Rawat</p>
+                <p className="text-gray-400 text-xs">akashrawatexapmle.com</p>
               </div>
             )}
           </div>
